@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments Table</title>
+</head>
+<body>
+
+<div id="dateHeader"></div>
+
+<table id="dataTable" border="1">
+    <thead>
+    <tr>
+        <th>Time</th>
+        <th>Doctor</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Данные будут добавлены с помощью JavaScript -->
+    </tbody>
+</table>
+
+<script>
+    // Используем AJAX для получения данных от сервера
+    fetch('http://localhost:8080/appointments')
+        .then(response => response.json())
+        .then(appointmentData => {
+            // Обработка данных и построение таблицы
+            displayAppointments(appointmentData);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function displayAppointments(data) {
+        // Отображение даты над таблицей
+        var dateHeader = document.getElementById('dateHeader');
+        var dates = Object.keys(data);
+        dateHeader.innerHTML = 'Appointments for ' + dates.join(', ');
+
+        // Построение таблицы
+        var tableBody = document.querySelector('#dataTable tbody');
+        for (var date in data) {
+            if (data.hasOwnProperty(date)) {
+                var appointments = data[date];
+                appointments.forEach(function (appointment) {
+                    var row = tableBody.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+
+                    // Создание гиперссылки
+                    var link = document.createElement('a');
+                    link.href = 'appointmentDetails.html?date=' + date + '&time=' + appointment.time;
+
+                    // Заполнение ячеек таблицы
+                    link.appendChild(document.createTextNode(appointment.time));
+                    cell1.appendChild(link);
+                    cell2.innerHTML = appointment.doctor;
+                    cell3.innerHTML = appointment.description;
+                });
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
